@@ -23,14 +23,11 @@ class OrderedTree {
     template <typename Traversal>
     using const_iterator = TreeIterator<OrderedTree, Traversal>;
 
-    using NodeAlocator = typename std::allocator_traits<
-        allocator>::template rebind_alloc<Node<value_type>>;
-
    private:
     BST<value_type, compare, allocator> bst_;
     size_t size_ = 0;
     compare comp_;
-    NodeAlocator alloc_;
+    allocator alloc_;
 
    public:
     OrderedTree() = default;
