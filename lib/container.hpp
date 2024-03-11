@@ -143,8 +143,8 @@ class OrderedTree {
     }
     [[nodiscard]] bool empty() const { return size_ == 0; }
 
-    [[nodiscard]] Compare key_comp() const { return comp_; }
-    [[nodiscard]] Compare value_comp() const { return comp_; }
+    [[nodiscard]] compare key_comp() const { return comp_; }
+    [[nodiscard]] compare value_comp() const { return comp_; }
     [[nodiscard]] allocator get_allocator() const { return alloc_; }
 
     OrderedTree& operator=(std::initializer_list<value_type> il) {
