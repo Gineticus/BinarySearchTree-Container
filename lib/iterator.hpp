@@ -2,37 +2,34 @@
 
 #include <cstdint>
 
-template <typename value_type, typename DefaultTraversal = InOrder<value_type>,
-          typename Compare = std::less<value_type>,
-          typename Allocator = std::allocator<value_type>>
+template <
+    typename T, typename DefaultTraversal = InOrder<T>,
+    typename Compare = std::less<T>, typename Allocator = std::allocator<T>,
+    typename =
+        std::void_t<decltype(DefaultTraversal::next, DefaultTraversal::prev)>>
 class OrderedTree;
 
-template <typename Container,
-          typename Traversal = InOrder<typename Container::value_type>>
+template <typename T, typename DefaultTraversal, typename Compare,
+          typename Allocator, typename Traversal,
+          typename = std::void_t<decltype(Traversal::next, Traversal::prev)>>
 class TreeIterator {
    public:
     using iterator_category = std::bidirectional_iterator_tag;
-    using value_type = typename Container::value_type;
+    using value_type = T;
     using difference_type = std::ptrdiff_t;
     using pointer = const value_type*;
     using reference = const value_type&;
-
     using traversal = Traversal;
 
    private:
     Node<value_type>* node_;
-    const BST<value_type, typename Container::compare,
-              typename Container::allocator>* bst_;
+    const BST<T, Compare, Allocator>* bst_;
     bool reverse_;
 
-    friend class OrderedTree<value_type, typename Container::default_traversal,
-                             typename Container::compare,
-                             typename Container::allocator>;
+    friend class OrderedTree<T, DefaultTraversal, Compare, Allocator>;
 
    public:
-    TreeIterator(Node<value_type>* node,
-                 const BST<value_type, typename Container::compare,
-                           typename Container::allocator>* bst,
+    TreeIterator(Node<value_type>* node, const BST<T, Compare, Allocator>* bst,
                  bool reverse = false)
         : node_(node), bst_(bst), reverse_(reverse) {}
     TreeIterator(const TreeIterator& other)

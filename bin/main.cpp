@@ -3,6 +3,14 @@
 
 #include "../lib/container.hpp"
 
+template <typename T, typename = T::iterator>
+void print(const T& container) {
+    for (auto it = container.begin(); it != container.end(); it++) {
+        std::cout << *it << " ";
+    }
+    std::cout << std::endl;
+}
+
 int main() {
     OrderedTree<int> bst;
     bst = {3, 1, 4, 5, 5, 9, 2, 6, 5, 3, 5};
@@ -54,5 +62,7 @@ int main() {
         std::cout << *it << " ";
     }
     std::cout << std::endl;
+    OrderedTree<int> bst3{1, 2, 3, 4, 5, 6, 7, 8, 9};
+    print(bst3);
     return 0;
 }

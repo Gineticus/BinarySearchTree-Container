@@ -9,19 +9,24 @@
 #include "iterator.hpp"
 
 template <typename T, typename DefaultTraversal, typename Compare,
-          typename Allocator>
+          typename Allocator, typename>
 class OrderedTree {
    public:
+    using key_type = T;
     using value_type = T;
+    using node_type = Node<value_type>;
     using default_traversal = DefaultTraversal;
     using compare = Compare;
     using allocator = Allocator;
     using size_type = size_t;
 
+    using iterator =
+        TreeIterator<T, DefaultTraversal, Compare, Allocator, default_traversal>;
+    using const_iterator =
+        TreeIterator<T, DefaultTraversal, Compare, Allocator, default_traversal>;
     template <typename Traversal>
-    using iterator = TreeIterator<OrderedTree, Traversal>;
-    template <typename Traversal>
-    using const_iterator = TreeIterator<OrderedTree, Traversal>;
+    using template_iterator =
+        TreeIterator<T, DefaultTraversal, Compare, Allocator, Traversal>;
 
    private:
     BST<value_type, compare, allocator> bst_;
@@ -51,9 +56,9 @@ class OrderedTree {
     ~OrderedTree() = default;
 
     template <typename Traversal = default_traversal>
-    iterator<Traversal> insert(const value_type& data) {
+    template_iterator<Traversal> insert(const value_type& data) {
         ++size_;
-        return iterator<Traversal>(bst_.insert(data), &bst_);
+        return template_iterator<Traversal>(bst_.insert(data), &bst_);
     }
     void insert(std::initializer_list<value_type> il) {
         for (const auto& data : il) {
@@ -76,7 +81,7 @@ class OrderedTree {
         return erased;
     }
     template <typename Traversal = default_traversal>
-    iterator<Traversal> erase(iterator<Traversal> position) {
+    template_iterator<Traversal> erase(template_iterator<Traversal> position) {
         auto next = position;
         ++next;
         --size_;
@@ -84,8 +89,8 @@ class OrderedTree {
         return next;
     }
     template <typename Traversal = default_traversal>
-    iterator<Traversal> erase(iterator<Traversal> first,
-                              iterator<Traversal> last) {
+    template_iterator<Traversal> erase(template_iterator<Traversal> first,
+                                       template_iterator<Traversal> last) {
         while (first != last) {
             first = erase(first);
         }
@@ -104,25 +109,26 @@ class OrderedTree {
     }
 
     template <typename Traversal = default_traversal>
-    [[nodiscard]] iterator<Traversal> find(const value_type& data) const {
-        return iterator<Traversal>(bst_.find(data), &bst_);
+    [[nodiscard]] template_iterator<Traversal> find(
+        const value_type& data) const {
+        return template_iterator<Traversal>(bst_.find(data), &bst_);
     }
     [[nodiscard]] bool contains(const value_type& data) {
         return bst_.find(data) != nullptr;
     }
     template <typename Traversal = default_traversal>
-    [[nodiscard]] iterator<Traversal> lower_bound(
+    [[nodiscard]] template_iterator<Traversal> lower_bound(
         const value_type& data) const {
-        return iterator<Traversal>(bst_.lower_bound(data), &bst_);
+        return template_iterator<Traversal>(bst_.lower_bound(data), &bst_);
     }
     template <typename Traversal = default_traversal>
-    [[nodiscard]] iterator<Traversal> upper_bound(
+    [[nodiscard]] template_iterator<Traversal> upper_bound(
         const value_type& data) const {
-        return iterator<Traversal>(bst_.upper_bound(data), &bst_);
+        return template_iterator<Traversal>(bst_.upper_bound(data), &bst_);
     }
     template <typename Traversal = default_traversal>
-    [[nodiscard]] std::pair<iterator<Traversal>,
-                            iterator<Traversal>>
+    [[nodiscard]] std::pair<template_iterator<Traversal>,
+                            template_iterator<Traversal>>
     equal_range(const value_type& data) const {
         return std::make_pair(lower_bound<Traversal>(data),
                               upper_bound<Traversal>(data));
@@ -186,40 +192,38 @@ class OrderedTree {
     }
 
     template <typename Traversal = default_traversal>
-    [[nodiscard]] iterator<Traversal> begin() const {
-        return iterator<Traversal>(Traversal::next(nullptr, bst_.root()),
-                                   &bst_);
+    [[nodiscard]] template_iterator<Traversal> begin() const {
+        return template_iterator<Traversal>(
+            Traversal::next(nullptr, bst_.root()), &bst_);
     }
     template <typename Traversal = default_traversal>
-    [[nodiscard]] iterator<Traversal> end() const {
-        return iterator<Traversal>(nullptr, &bst_);
+    [[nodiscard]] template_iterator<Traversal> end() const {
+        return template_iterator<Traversal>(nullptr, &bst_);
     }
     template <typename Traversal = default_traversal>
-    [[nodiscard]] iterator<Traversal> rbegin() const {
-        return iterator<Traversal>(Traversal::prev(nullptr, bst_.root()), &bst_,
-                                   true);
+    [[nodiscard]] template_iterator<Traversal> rbegin() const {
+        return template_iterator<Traversal>(
+            Traversal::prev(nullptr, bst_.root()), &bst_, true);
     }
     template <typename Traversal = default_traversal>
-    [[nodiscard]] iterator<Traversal> rend() const {
-        return iterator<Traversal>(nullptr, &bst_, true);
+    [[nodiscard]] template_iterator<Traversal> rend() const {
+        return template_iterator<Traversal>(nullptr, &bst_, true);
     }
     template <typename Traversal = default_traversal>
-    [[nodiscard]] const_iterator<Traversal> cbegin() const {
-        return const_iterator<Traversal>(Traversal::next(nullptr, bst_.root()),
-                                         &bst_);
+    [[nodiscard]] template_iterator<Traversal> cbegin() const {
+        return (*this).template begin<Traversal>();
     }
     template <typename Traversal = default_traversal>
-    [[nodiscard]] const_iterator<Traversal> cend() const {
-        return const_iterator<Traversal>(nullptr, &bst_);
+    [[nodiscard]] template_iterator<Traversal> cend() const {
+        return (*this).template end<Traversal>();
     }
     template <typename Traversal = default_traversal>
-    [[nodiscard]] const_iterator<Traversal> crbegin() const {
-        return const_iterator<Traversal>(Traversal::prev(nullptr, bst_.root()),
-                                         &bst_, true);
+    [[nodiscard]] template_iterator<Traversal> crbegin() const {
+        return (*this).template rbegin<Traversal>();
     }
     template <typename Traversal = default_traversal>
-    [[nodiscard]] const_iterator<Traversal> crend() const {
-        return const_iterator<Traversal>(nullptr, &bst_, true);
+    [[nodiscard]] template_iterator<Traversal> crend() const {
+        return (*this).template rend<Traversal>();
     }
 };
 
