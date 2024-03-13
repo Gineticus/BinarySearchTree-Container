@@ -21,12 +21,12 @@ class OrderedTree {
     using size_type = size_t;
 
     using iterator =
-        TreeIterator<T, DefaultTraversal, Compare, Allocator, default_traversal>;
+        TreeIterator<default_traversal, OrderedTree>;
     using const_iterator =
-        TreeIterator<T, DefaultTraversal, Compare, Allocator, default_traversal>;
+        TreeIterator<default_traversal, OrderedTree>;
     template <typename Traversal>
     using template_iterator =
-        TreeIterator<T, DefaultTraversal, Compare, Allocator, Traversal>;
+        TreeIterator<Traversal, OrderedTree>;
 
    private:
     BST<value_type, compare, allocator> bst_;

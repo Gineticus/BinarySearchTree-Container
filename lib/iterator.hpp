@@ -9,13 +9,12 @@ template <
         std::void_t<decltype(DefaultTraversal::next, DefaultTraversal::prev)>>
 class OrderedTree;
 
-template <typename T, typename DefaultTraversal, typename Compare,
-          typename Allocator, typename Traversal,
+template <typename Traversal, typename Container,
           typename = std::void_t<decltype(Traversal::next, Traversal::prev)>>
 class TreeIterator {
    public:
     using iterator_category = std::bidirectional_iterator_tag;
-    using value_type = T;
+    using value_type = typename Container::value_type;
     using difference_type = std::ptrdiff_t;
     using pointer = const value_type*;
     using reference = const value_type&;
@@ -23,13 +22,18 @@ class TreeIterator {
 
    private:
     Node<value_type>* node_;
-    const BST<T, Compare, Allocator>* bst_;
+    const BST<value_type, typename Container::compare,
+              typename Container::allocator>* bst_;
     bool reverse_;
 
-    friend class OrderedTree<T, DefaultTraversal, Compare, Allocator>;
+    friend class OrderedTree<value_type, typename Container::default_traversal,
+                             typename Container::compare,
+                             typename Container::allocator>;
 
    public:
-    TreeIterator(Node<value_type>* node, const BST<T, Compare, Allocator>* bst,
+    TreeIterator(Node<value_type>* node,
+                 const BST<value_type, typename Container::compare,
+                           typename Container::allocator>* bst,
                  bool reverse = false)
         : node_(node), bst_(bst), reverse_(reverse) {}
     TreeIterator(const TreeIterator& other)
