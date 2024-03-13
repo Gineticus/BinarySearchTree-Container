@@ -22,18 +22,18 @@ class TreeIterator {
 
    private:
     Node<value_type>* node_;
-    const BST<value_type, typename Container::compare,
-              typename Container::allocator>* bst_;
+    const BST<value_type, typename Container::value_compare,
+              typename Container::allocator_type>* bst_;
     bool reverse_;
 
     friend class OrderedTree<value_type, typename Container::default_traversal,
-                             typename Container::compare,
-                             typename Container::allocator>;
+                             typename Container::value_compare,
+                             typename Container::allocator_type>;
 
    public:
     TreeIterator(Node<value_type>* node,
-                 const BST<value_type, typename Container::compare,
-                           typename Container::allocator>* bst,
+                 const BST<value_type, typename Container::value_compare,
+                           typename Container::allocator_type>* bst,
                  bool reverse = false)
         : node_(node), bst_(bst), reverse_(reverse) {}
     TreeIterator(const TreeIterator& other)

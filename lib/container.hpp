@@ -15,24 +15,27 @@ class OrderedTree {
     using key_type = T;
     using value_type = T;
     using node_type = Node<value_type>;
-    using default_traversal = DefaultTraversal;
-    using compare = Compare;
-    using allocator = Allocator;
-    using size_type = size_t;
+    using reference = value_type&;
+    using const_reference = const value_type&;
 
-    using iterator =
-        TreeIterator<default_traversal, OrderedTree>;
-    using const_iterator =
-        TreeIterator<default_traversal, OrderedTree>;
+    using key_compare = Compare;
+    using value_compare = Compare;
+    using allocator_type = Allocator;
+
+    using size_type = size_t;
+    using difference_type = ptrdiff_t;
+
+    using default_traversal = DefaultTraversal;
+    using iterator = TreeIterator<default_traversal, OrderedTree>;
+    using const_iterator = TreeIterator<default_traversal, OrderedTree>;
     template <typename Traversal>
-    using template_iterator =
-        TreeIterator<Traversal, OrderedTree>;
+    using template_iterator = TreeIterator<Traversal, OrderedTree>;
 
    private:
-    BST<value_type, compare, allocator> bst_;
+    BST<value_type, value_compare, allocator_type> bst_;
     size_t size_ = 0;
-    compare comp_;
-    allocator alloc_;
+    value_compare comp_;
+    allocator_type alloc_;
 
    public:
     OrderedTree() = default;
@@ -149,9 +152,9 @@ class OrderedTree {
     }
     [[nodiscard]] bool empty() const { return size_ == 0; }
 
-    [[nodiscard]] compare key_comp() const { return comp_; }
-    [[nodiscard]] compare value_comp() const { return comp_; }
-    [[nodiscard]] allocator get_allocator() const { return alloc_; }
+    [[nodiscard]] value_compare key_comp() const { return comp_; }
+    [[nodiscard]] value_compare value_comp() const { return comp_; }
+    [[nodiscard]] allocator_type get_allocator() const { return alloc_; }
 
     OrderedTree& operator=(std::initializer_list<value_type> il) {
         clear();
