@@ -17,19 +17,27 @@ class OrderedTree {
     using node_type = Node<value_type>;
     using reference = value_type&;
     using const_reference = const value_type&;
+    using pointer = value_type*;
+    using const_pointer = const value_type*;
 
     using key_compare = Compare;
     using value_compare = Compare;
     using allocator_type = Allocator;
 
     using size_type = size_t;
-    using difference_type = ptrdiff_t;
+    using difference_type = std::ptrdiff_t;
 
     using default_traversal = DefaultTraversal;
+
     using iterator = TreeIterator<default_traversal, OrderedTree>;
     using const_iterator = TreeIterator<default_traversal, OrderedTree>;
+    using reverse_iterator = std::reverse_iterator<iterator>;
+    using const_reverse_iterator = std::reverse_iterator<const_iterator>;
     template <typename Traversal>
     using template_iterator = TreeIterator<Traversal, OrderedTree>;
+    template <typename Traversal>
+    using reverse_template_iterator =
+        std::reverse_iterator<template_iterator<Traversal>>;
 
    private:
     BST<value_type, value_compare, allocator_type> bst_;
@@ -204,13 +212,12 @@ class OrderedTree {
         return template_iterator<Traversal>(nullptr, &bst_);
     }
     template <typename Traversal = default_traversal>
-    [[nodiscard]] template_iterator<Traversal> rbegin() const {
-        return template_iterator<Traversal>(
-            Traversal::prev(nullptr, bst_.root()), &bst_, true);
+    [[nodiscard]] reverse_template_iterator<Traversal> rbegin() const {
+        return reverse_template_iterator<Traversal>(end<Traversal>());
     }
     template <typename Traversal = default_traversal>
-    [[nodiscard]] template_iterator<Traversal> rend() const {
-        return template_iterator<Traversal>(nullptr, &bst_, true);
+    [[nodiscard]] reverse_template_iterator<Traversal> rend() const {
+        return reverse_template_iterator<Traversal>(begin<Traversal>());
     }
     template <typename Traversal = default_traversal>
     [[nodiscard]] template_iterator<Traversal> cbegin() const {
@@ -221,11 +228,11 @@ class OrderedTree {
         return (*this).template end<Traversal>();
     }
     template <typename Traversal = default_traversal>
-    [[nodiscard]] template_iterator<Traversal> crbegin() const {
+    [[nodiscard]] reverse_template_iterator<Traversal> crbegin() const {
         return (*this).template rbegin<Traversal>();
     }
     template <typename Traversal = default_traversal>
-    [[nodiscard]] template_iterator<Traversal> crend() const {
+    [[nodiscard]] reverse_template_iterator<Traversal> crend() const {
         return (*this).template rend<Traversal>();
     }
 };

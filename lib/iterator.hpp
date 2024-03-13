@@ -24,7 +24,6 @@ class TreeIterator {
     Node<value_type>* node_;
     const BST<value_type, typename Container::value_compare,
               typename Container::allocator_type>* bst_;
-    bool reverse_;
 
     friend class OrderedTree<value_type, typename Container::default_traversal,
                              typename Container::value_compare,
@@ -33,11 +32,10 @@ class TreeIterator {
    public:
     TreeIterator(Node<value_type>* node,
                  const BST<value_type, typename Container::value_compare,
-                           typename Container::allocator_type>* bst,
-                 bool reverse = false)
-        : node_(node), bst_(bst), reverse_(reverse) {}
+                           typename Container::allocator_type>* bst)
+        : node_(node), bst_(bst) {}
     TreeIterator(const TreeIterator& other)
-        : node_(other.node_), bst_(other.bst_), reverse_(other.reverse_) {}
+        : node_(other.node_), bst_(other.bst_) {}
     ~TreeIterator() = default;
 
     TreeIterator& operator=(const TreeIterator& other) {
@@ -45,7 +43,6 @@ class TreeIterator {
             throw std::invalid_argument("Iterators are from different trees");
         }
         node_ = other.node_;
-        reverse_ = other.reverse_;
         return *this;
     }
 
@@ -62,18 +59,10 @@ class TreeIterator {
     }
 
     TreeIterator& operator++() {
-        if (reverse_) {
-            node_ = traversal::prev(node_, bst_->root());
-            return *this;
-        }
         node_ = traversal::next(node_, bst_->root());
         return *this;
     }
     TreeIterator& operator--() {
-        if (reverse_) {
-            node_ = traversal::next(node_, bst_->root());
-            return *this;
-        }
         node_ = traversal::prev(node_, bst_->root());
         return *this;
     }
